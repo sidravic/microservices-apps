@@ -16,7 +16,7 @@ db.on('error', function(err){
     Logger.error(err.message);
 })
 
-db.once('open', function(cb){
+db.on('open', function(cb){
     Logger.info("Database connection initialized successfully.")
 })
 

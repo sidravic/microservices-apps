@@ -1,14 +1,19 @@
 var Hapi = require('hapi')
 var server = new Hapi.Server();
 //var moment = require('moment')
-//var Path = require('path');
-//var Logger = require('./config/logger.js');
+var Logger = require('./config/logger.js')
 var Routes = require('./config');
-//var Good = require('good');
 var jwt = require('hapi-auth-jwt2');
+var db = require('./config/db/database.js').db;
 var userService = require('./services/user_service.js');
+var eventStoreService = require('./services/event_store_service.js');
 
 server.connection({port: 8000});
+
+eventStoreService.init(function(err, es){ 
+	Logger.info(["info"], "Event Store initialized.")
+})
+
 
 /* logging options */
 var loggingOptions = {
@@ -62,4 +67,22 @@ server.log(["info"], "Launching Server...");
 server.start(function(){
 	server.log(["info"], "Node ENV " + process.env.NODE_ENV);
 	server.log(["info"], "Server started on port" + server.info.port);
+
+	
+	
+	// To test out the functionality uncomment the following lines 67-77
+	// eventStoreService.init(function(err, es){
+	// 	if(err) throw err;		
+		
+	// })
+
+	// db.once('open', function(){
+	// 	console.log("Database Connection Established");
+	// 	userService.findByEmail('sid.ravichandran+1@gmail.com').then(function(user){						
+	// 		userService.events.emit('userCreated', user);
+	// 	})
+	// })
+
+
+
 })

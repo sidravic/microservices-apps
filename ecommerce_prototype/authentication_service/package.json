@@ -10,7 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "async": "^1.2.1",
+    "asyncawait": "^0.7.4",
     "bcrypt": "^0.8.3",
+    "event-store-client": "0.0.5",
     "good": "^6.1.4",
     "hapi-auth-jwt2": "^4.4.0",
     "lodash": "^3.9.3"

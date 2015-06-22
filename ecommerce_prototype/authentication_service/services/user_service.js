@@ -1,19 +1,24 @@
-var crypto = require('crypto')
+var crypto       = require('crypto')
 var jsonWebToken = require('jsonwebtoken');
-var signingKey = "piperatthegatesofdawniscallingyouhisway"
-var User = require('./../models/user.js')
+var signingKey   = "piperatthegatesofdawniscallingyouhisway"
+var User         = require('./../models/user.js')
+var async        = require('asyncawait/async');
+var await        = require('asyncawait/await');
+var util         = require('util');
+var events       = require('events');
+var eventStoreService = require('./event_store_service.js');
+var eventConstants = require('./config/events.js');
+
 
 var UserService = {
     validate: function(decoded, request, cb){
        UserService.isAuthTokenValid(decoded.id.toString(), request.headers.authorization, function(err, isValid){
            if (err) cb(err, false);
-
            if(isValid)
              cb(null, true);
            else
              cb(null, false);
        });
-
     },
 
     generateJSONWebToken: function(user){
@@ -35,7 +40,6 @@ var UserService = {
                     cb(null, false);
             }
         }
-
         User.findById(userId, verifyToken);
     },
 
@@ -45,7 +49,32 @@ var UserService = {
             return true;
         else
             return false;
+    },
+
+    findByEmail: async(function(value, cb){
+        return await(User.findOne({email: value}))
+    }),
+
+    storeUserCreatedEvent: function(user){
+        eventStoreService.writeEvent(eventConstants.USER_CREATED.stream, eventConstants.USER_CREATED.event, user )      
+    },
+
+    storeAuthenticatedEvent: function(user){
+        eventStoreService.writeEvent(events.USER_AUTHENTICATED.stream, 
+            eventConstants.USER_AUTHENTICATED.event, user);
     }
 };
+
+UserService.events = new events.EventEmitter
+
+UserService.events.on(eventConstants.USER_CREATED.event, function(user){    
+    Logger.info(["info"], "User Created " + user.id.toString());    
+    UserService.storeUserCreatedEvent(user);
+})
+
+UserService.events.on(eventConstants.USER_AUTHENTICATED.event, function(user){
+    Logger.info(["info"], "User Authenticated " + user.email.toString());
+    UserService.storeAuthenticatedEvent(user);
+});
 
 module.exports = UserService;

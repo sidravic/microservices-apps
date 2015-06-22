@@ -122,6 +122,7 @@ module.exports.auth = {
                                    if (err)
                                        reply(Boom.internal("Something went wrong"))
                                    else {
+                                       UserService.events.emit('userAuthenticated', user)  
                                        reply({
                                            user: savedUser.asJSON(),
                                            authorizationToken: jsonWebToken

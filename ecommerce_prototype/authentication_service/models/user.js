@@ -5,6 +5,8 @@ var mongoose = require('./../config/db/database.js').mongoose;
 var crypto = require('crypto')
 var validator = require('validator');
 var bcrypt = require('bcrypt');
+var util = require('util');
+
 
 var genSalt = Promise.promisify(bcrypt.genSalt)
 var createHash = Promise.promisify(bcrypt.hash)
@@ -86,4 +88,7 @@ User.verifyPassword = function(user, password, cb){
     })
 }
 
+
 module.exports = User;
+
+
