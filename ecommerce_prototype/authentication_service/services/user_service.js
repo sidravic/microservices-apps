@@ -7,7 +7,8 @@ var await        = require('asyncawait/await');
 var util         = require('util');
 var events       = require('events');
 var eventStoreService = require('./event_store_service.js');
-var eventConstants = require('./config/events.js');
+var eventConstants = require('./../config/events.js');
+var Logger       = require('./../config/logger.js');
 
 
 var UserService = {
@@ -59,9 +60,12 @@ var UserService = {
         eventStoreService.writeEvent(eventConstants.USER_CREATED.stream, eventConstants.USER_CREATED.event, user )      
     },
 
-    storeAuthenticatedEvent: function(user){
-        eventStoreService.writeEvent(events.USER_AUTHENTICATED.stream, 
-            eventConstants.USER_AUTHENTICATED.event, user);
+    storeAuthenticatedEvent: function(userData){
+        var eventConstants = require('./../config/events.js');
+        eventStoreService.writeEvent(eventConstants.USER_AUTHENTICATED.stream, 
+            eventConstants.USER_AUTHENTICATED.event, {user: userData.user,
+                                                      authToken: userData.authToken
+                                                     });
     }
 };
 
@@ -72,9 +76,10 @@ UserService.events.on(eventConstants.USER_CREATED.event, function(user){
     UserService.storeUserCreatedEvent(user);
 })
 
-UserService.events.on(eventConstants.USER_AUTHENTICATED.event, function(user){
-    Logger.info(["info"], "User Authenticated " + user.email.toString());
-    UserService.storeAuthenticatedEvent(user);
+UserService.events.on(eventConstants.USER_AUTHENTICATED.event, function(userData){
+    debugger;
+    Logger.info(["info"], "User Authenticated " + userData.user.email.toString());
+    UserService.storeAuthenticatedEvent(userData);
 });
 
 module.exports = UserService;

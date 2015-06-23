@@ -71,17 +71,23 @@ server.start(function(){
 	
 	
 	// To test out the functionality uncomment the following lines 67-77
-	// eventStoreService.init(function(err, es){
-	// 	if(err) throw err;		
-		
-	// })
 
-	// db.once('open', function(){
-	// 	console.log("Database Connection Established");
-	// 	userService.findByEmail('sid.ravichandran+1@gmail.com').then(function(user){						
-	// 		userService.events.emit('userCreated', user);
-	// 	})
-	// })
+	var constants = require('./config/events');
+
+	eventStoreService.init(function(err, es){
+		if(err) throw err;		
+		
+	})
+
+	db.once('open', function(){
+		console.log("Database Connection Established");
+		userService.findByEmail('sid.ravichandran+1@gmail.com').then(function(user){						
+			setInterval(function(){
+					var authToken = user.authTokens[0]
+					userService.events.emit(constants.USER_AUTHENTICATED.event, {user: user, authToken: authToken});					
+			}, 3000)			
+		})
+	})
 
 
 

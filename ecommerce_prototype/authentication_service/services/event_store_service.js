@@ -63,8 +63,9 @@ var EventStoreService = {
     },
 
     writeEvent: function(streamId, eventName, eventData){
-        asyncCreateEvent(eventName, eventData).then(function(newEvent){
-            console.log(newEvent);
+        asyncCreateEvent(eventName, eventData).then(function(newEvent){    
+            console.log('Writing event to ' + streamId);
+            console.log(newEvent.data);
 
             var newEvents = [];
             newEvents.push(newEvent);
